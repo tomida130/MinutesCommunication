@@ -191,8 +191,8 @@ class DiscordBot(discord.Client):
         return now.weekday() == config.weekday and now.strftime('%H:%M') == config.time
 
     # リアクションが追加されたときに呼び出されるメソッド
-    async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User) -> None:
-        await self.reaction_handler.handle_reaction_add(reaction, user, self.channel_configs, self.reaction_message_ids)
+    # async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User) -> None:
+    #     await self.reaction_handler.handle_reaction_add(reaction, user, self.channel_configs, self.reaction_message_ids)
 
     # ボットが準備完了したときに呼び出されるメソッド
     async def on_ready(self) -> None:
