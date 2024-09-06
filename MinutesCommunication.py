@@ -25,14 +25,8 @@ class ChannelConfigBase(ABC):
     role_id: int
     weekday: int  # 0: 月曜日, 1: 火曜日, ..., 6: 日曜日
     time: str  # "HH:MM"形式で設定
-
-    # コンストラクタ後の追加の検証を行います
-    def __post_init__(self):
-        if not (0 <= self.weekday <= 6):
-            raise ValueError("曜日は0から6までの値で指定してください")
-        if not self._validate_time_format(self.time):
-            raise ValueError("時間は'HH:MM'形式で指定してください")
-
+    
+    
     # "HH:MM"形式の時間を検証するメソッド
     @staticmethod
     def _validate_time_format(time_str: str) -> bool:
@@ -46,6 +40,14 @@ class ChannelConfigBase(ABC):
             return True
         except ValueError:
             return False
+
+    # コンストラクタ後の追加の検証を行います
+    def __post_init__(self):
+        if not (0 <= self.weekday <= 6):
+            raise ValueError("曜日は0から6までの値で指定してください")
+        if not self._validate_time_format(self.time):
+            raise ValueError("時間は'HH:MM'形式で指定してください")
+
 
     # メッセージを生成する抽象メソッド（具体的な実装はサブクラスで定義）
     @abstractmethod
@@ -80,6 +82,14 @@ class ReactionHandler:
     def __init__(self, bot: discord.Client, reaction_messages: list[str]):
         self.bot = bot
         self.reaction_messages = reaction_messages
+    
+    # メッセージIDからチャンネル設定を検索するメソッド
+    def _find_channel_config(self, message_id: int, channel_configs: list[ChannelConfig], 
+                             reaction_message_ids: dict[int, int]) -> ChannelConfig | None:
+        for config in channel_configs:
+            if message_id == reaction_message_ids.get(config.channel_id):
+                return config
+        return None
 
     # リアクションが追加されたときの処理を行うメソッド
     async def handle_reaction_add(self, reaction: discord.Reaction, user: discord.User, 
@@ -102,13 +112,6 @@ class ReactionHandler:
         random_message = random.choice(self.reaction_messages)
         await reaction.message.channel.send(f'{user.mention} {random_message}')
 
-    # メッセージIDからチャンネル設定を検索するメソッド
-    def _find_channel_config(self, message_id: int, channel_configs: list[ChannelConfig], 
-                             reaction_message_ids: dict[int, int]) -> ChannelConfig | None:
-        for config in channel_configs:
-            if message_id == reaction_message_ids.get(config.channel_id):
-                return config
-        return None
 
 # Discordのボットクラス
 # ボットの初期化やスケジュールされたタスクの管理、リアクション処理を行います
@@ -125,6 +128,10 @@ class DiscordBot(discord.Client):
     # ボットを開始するためのメソッド
     async def start_bot(self) -> None:
         await self.start(self.token)
+        
+    # 現在の時間が議事録送信時間かどうかを確認するメソッド
+    def _should_send_meeting_minutes(self, config: ChannelConfig, now: datetime) -> bool:
+        return now.weekday() == config.weekday and now.strftime('%H:%M') == config.time
 
     # 1分ごとに実行されるスケジュールされたタスク
     @tasks.loop(minutes=1)
@@ -149,10 +156,7 @@ class DiscordBot(discord.Client):
             # リアクションの確認処理を実行
             await self.check_reactions(config)
 
-    # 議事録送信の条件を確認するメソッド
-    def _should_send_meeting_minutes(self, config: ChannelConfig, now: datetime) -> bool:
-        # 曜日と時間が一致するかどうかを確認
-        return now.weekday() == config.weekday and now.strftime('%H:%M') == config.time
+
 
     # リアクションを確認し、リアクションしていないメンバーに通知するメソッド
     async def check_reactions(self, config: ChannelConfig) -> None:
@@ -186,9 +190,7 @@ class DiscordBot(discord.Client):
             member.mention for member in non_reacted_members) + '\r\n議事録を読んで必ずリアクションしてね！'
         await channel.send(mention_text)
 
-    # 現在の時間が議事録送信時間かどうかを確認するメソッド
-    def _should_send_meeting_minutes(self, config: ChannelConfig, now: datetime) -> bool:
-        return now.weekday() == config.weekday and now.strftime('%H:%M') == config.time
+
 
     # リアクションが追加されたときに呼び出されるメソッド
     # async def on_reaction_add(self, reaction: discord.Reaction, user: discord.User) -> None:
@@ -201,7 +203,7 @@ class DiscordBot(discord.Client):
 
 if __name__ == '__main__':
     TOKEN: Final[str] = os.getenv('DISCORD_TOKEN')  # ボットのトークンを取得
-    GUILD_ID: Final[int] = # サーバーID
+    GUILD_ID: Final[int] = 'GUILD_ID'# サーバーID
     REACTION_MESSAGES: Final[list[str]] = load_reaction_messages('reaction_messages.csv')  # CSVからリアクションメッセージをロード
     
     # チャンネル設定をリストとして定義
