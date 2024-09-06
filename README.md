@@ -26,7 +26,7 @@
 
 ### 2. `ChannelConfigBase`
 
-- **説明**: チャンネル設定の基本クラス。抽象クラスとして、各チャンネル設定の基本構造を提供します。
+- **説明**: チャンネル設定の基本クラス。抽象クラスとして、各チャンネル設定の基本構造を提供します。また、このクラスでweekdayとtimeのバリデーションチェックを行っています。
 - **属性**:
   - `channel_id`: メッセージを送信するチャンネルの ID。
   - `role_id`: リアクションを求める役職の ID。
@@ -68,14 +68,14 @@
   - `scheduled_task() -> None`: 1 分ごとに実行されるスケジュールされたタスク。
   - `send_meeting_minutes(config: ChannelConfig) -> None`: 指定されたチャンネルに議事録を送信します。
   - `check_reactions(config: ChannelConfig) -> None`: リアクションを確認し、リアクションしていないメンバーに通知します。
-  - `on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None`: リアクションが追加されたときに呼び出されるメソッド。＊現在は、メッセージが流れてチャンネルが見づらいと指摘があったためコメントアウトしている（別のチャンネルを用意するなどで対応する案がある）
+  - `on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None`: リアクションが追加されたときに呼び出されるメソッド。＊現在は、メッセージが流れてチャンネルが見づらいと指摘があったためコメントアウトしています（別のチャンネルを用意するなどで対応する案を考えています）
   - `on_ready() -> None`: ボットが準備完了したときに呼び出されるメソッド。
 
 ## 設定と起動
 
 ### 1. `.env`ファイルの設定
 
-- `DISCORD_TOKEN`: Discord のボットトークンを設定します。
+- `DISCORD_TOKEN`: Discord のボットトークンを設定します。詳細は、NASの自分のページで確認してください。
 - `GUILD_ID`: ボットが動作するサーバーの ID を設定します。
 
 ### 2. チャンネル設定の定義
