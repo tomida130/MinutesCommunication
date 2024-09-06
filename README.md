@@ -2,81 +2,81 @@
 
 ## 概要
 
-このDiscordボットは、指定された時間に自動的にメッセージを送信し、特定の役職を持つメンバーがメッセージにリアクションしたかどうかを確認します。また、リアクションしていないメンバーに通知を送る機能も含まれています。ボットは、CSVファイルからメッセージを読み込み、複数のチャンネルで動作します。
+この Discord ボットは、指定された時間に自動的にメッセージを送信し、特定の役職を持つメンバーがメッセージにリアクションしたかどうかを確認します。また、リアクションしていないメンバーに通知を送る機能も含まれています。ボットは、CSV ファイルからメッセージを読み込み、複数のチャンネルで動作します。
 
 ## ファイル構成
 
 - `main.py`: ボットのメインファイル。全体のロジックを含んでいます。
-- `reaction_messages.csv`: リアクション用のメッセージが保存されたCSVファイル。
+- `reaction_messages.csv`: リアクション用のメッセージが保存された CSV ファイル。
 
 ## 必要な環境
 
-- Python 3.8以上
-- discord.pyライブラリ（`pip install discord.py`）
+- Python 3.8 以上
+- discord.py ライブラリ（`pip install discord.py`）
 - `.env`ファイルに`DISCORD_TOKEN`と`GUILD_ID`を設定
 
 ## 主要なクラスと関数
 
 ### 1. `load_reaction_messages(filename: str) -> list[str]`
 
-- **説明**: CSVファイルからリアクション用のメッセージを読み込み、リストとして返します。
+- **説明**: CSV ファイルからリアクション用のメッセージを読み込み、リストとして返します。
 - **引数**:
-    - `filename`: 読み込むCSVファイルの名前。
+  - `filename`: 読み込む CSV ファイルの名前。
 - **戻り値**: メッセージのリスト。
 
 ### 2. `ChannelConfigBase`
 
 - **説明**: チャンネル設定の基本クラス。抽象クラスとして、各チャンネル設定の基本構造を提供します。
 - **属性**:
-    - `channel_id`: メッセージを送信するチャンネルのID。
-    - `role_id`: リアクションを求める役職のID。
-    - `weekday`: メッセージを送信する曜日（0: 月曜日, 1: 火曜日, ..., 6: 日曜日）。
-    - `time`: メッセージを送信する時間（"HH"形式）。
+  - `channel_id`: メッセージを送信するチャンネルの ID。
+  - `role_id`: リアクションを求める役職の ID。
+  - `weekday`: メッセージを送信する曜日（0: 月曜日, 1: 火曜日, ..., 6: 日曜日）。
+  - `time`: メッセージを送信する時間（"HH"形式）。
 
 ### 3. `ChannelConfig(ChannelConfigBase)`
 
 - **説明**: `ChannelConfigBase`を継承した具体クラス。議事録のリンクを含むメッセージを生成します。
 - **属性**:
-    - `meeting_type`: ゼミの種類。
-    - `meeting_url`: 議事録のURL。
+  - `meeting_type`: ゼミの種類。
+  - `meeting_url`: 議事録の URL。
 - **メソッド**:
-    - `generate_message() -> str`: 役職にメンションを付けた議事録のリンク付きメッセージを生成します。
+  - `generate_message() -> str`: 役職にメンションを付けた議事録のリンク付きメッセージを生成します。
 
 ### 4. `ChannelConfigFactory`
 
 - **説明**: チャンネル設定を作成するファクトリクラス。チャンネルタイプに応じて適切な設定オブジェクトを生成します。
 - **メソッド**:
-    - `create(channel_type: str, **kwargs) -> ChannelConfigBase`: チャンネルタイプに応じた設定オブジェクトを生成します。
+  - `create(channel_type: str, **kwargs) -> ChannelConfigBase`: チャンネルタイプに応じた設定オブジェクトを生成します。
 
 ### 5. `ReactionHandler`
 
 - **説明**: リアクションに応じた処理を担当するクラス。メッセージに対してリアクションが追加されたときに実行される処理を定義します。
 - **メソッド**:
-    - `handle_reaction_add(reaction: discord.Reaction, user: discord.User, channel_configs: list[ChannelConfig], reaction_message_ids: dict[int, int]) -> None`: リアクションが追加されたときの処理を行います。
+  - `handle_reaction_add(reaction: discord.Reaction, user: discord.User, channel_configs: list[ChannelConfig], reaction_message_ids: dict[int, int]) -> None`: リアクションが追加されたときの処理を行います。
 
 ### 6. `DiscordBot(discord.Client)`
 
-- **説明**: Discordのボットクラス。ボットの初期化やスケジュールされたタスクの管理、リアクション処理を行います。
+- **説明**: Discord のボットクラス。ボットの初期化やスケジュールされたタスクの管理、リアクション処理を行います。
 - **属性**:
-    - `token`: ボットのトークン。
-    - `channel_configs`: 各チャンネルの設定オブジェクトのリスト。
-    - `reaction_message_ids`: メッセージIDを保存する辞書。
-    - `reaction_handler`: リアクション処理を担当するハンドラクラスのインスタンス。
-    - wait_time: リアクションを確認するまでの待ち時間（秒単位）　現在は1日待つようにしている
+  - `token`: ボットのトークン。
+  - `channel_configs`: 各チャンネルの設定オブジェクトのリスト。
+  - `reaction_message_ids`: メッセージ ID を保存する辞書。
+  - `reaction_handler`: リアクション処理を担当するハンドラクラスのインスタンス。
+  - `wait_time`: リアクションを確認するまでの待ち時間（秒単位）　現在は 1 日待つようにしている
 - **メソッド**:
-    - `start_bot() -> None`: ボットを開始します。
-    - `scheduled_task() -> None`: 1分ごとに実行されるスケジュールされたタスク。
-    - `send_meeting_minutes(config: ChannelConfig) -> None`: 指定されたチャンネルに議事録を送信します。
-    - `check_reactions(config: ChannelConfig) -> None`: リアクションを確認し、リアクションしていないメンバーに通知します。
-    - `on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None`: リアクションが追加されたときに呼び出されるメソッド。＊現在は、メッセージが流れてチャンネルが見づらいと指摘があったためコメントアウトしている（別のチャンネルを用意するなどで対応する案がある）
-    - `on_ready() -> None`: ボットが準備完了したときに呼び出されるメソッド。
+  - `start_bot() -> None`: ボットを開始します。
+  - `scheduled_task() -> None`: 1 分ごとに実行されるスケジュールされたタスク。
+  - `send_meeting_minutes(config: ChannelConfig) -> None`: 指定されたチャンネルに議事録を送信します。
+  - `check_reactions(config: ChannelConfig) -> None`: リアクションを確認し、リアクションしていないメンバーに通知します。
+  - `on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None`: リアクションが追加されたときに呼び出されるメソッド。＊現在は、メッセージが流れてチャンネルが見づらいと指摘があったためコメントアウトしている（別のチャンネルを用意するなどで対応する案がある）
+  - `on_ready() -> None`: ボットが準備完了したときに呼び出されるメソッド。
 
 ## 設定と起動
 
 ### 1. `.env`ファイルの設定
 
-- `DISCORD_TOKEN`: Discordのボットトークンを設定します。
-- `GUILD_ID`: ボットが動作するサーバーのIDを設定します。
+- `DISCORD_TOKEN`: Discord のボットトークンを設定します。
+- `GUILD_ID`: ボットが動作するサーバーの ID を設定します。
 
 ### 2. チャンネル設定の定義
 
@@ -100,7 +100,7 @@ channel_configs: Final[list[ChannelConfig]] = [
 ## 注意点
 
 - メッセージの送信時間と曜日が一致しない場合、メッセージは送信されません。
-- リアクションメッセージは`reaction_messages.csv`から読み込まれるため、事前にメッセージをCSVに記載してください。
+- リアクションメッセージは`reaction_messages.csv`から読み込まれるため、事前にメッセージを CSV に記載してください。
 
 ## 拡張
 
