@@ -34,9 +34,14 @@ class ChannelConfigBase(ABC):
             # 時間の解析を試みます（先頭にゼロを付ける）
             time_obj = datetime.strptime(time_str.zfill(5), '%H:%M').time()
             
-            # 時間が有効な範囲内であるかどうかを確認する
+            # 時間が有効な範囲内であるかどうかを確認
+            # 負の値や24時以上の時間、無効な時間を弾く
+            if time_obj.hour < 0 or time_obj.minute < 0:
+                return False
+            
             if time_obj >= datetime.strptime("23:59", "%H:%M").time():
                 return False
+
             return True
         except ValueError:
             return False
