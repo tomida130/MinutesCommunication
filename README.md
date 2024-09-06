@@ -62,13 +62,13 @@
   - `channel_configs`: 各チャンネルの設定オブジェクトのリスト。
   - `reaction_message_ids`: メッセージ ID を保存する辞書。
   - `reaction_handler`: リアクション処理を担当するハンドラクラスのインスタンス。
-  - `wait_time`: リアクションを確認するまでの待ち時間（秒単位）　現在は 1 日待つようにしている
+  - `wait_time`: リアクションを確認するまでの待ち時間（秒単位）。現在は 1 日待つようにしています。
 - **メソッド**:
   - `start_bot() -> None`: ボットを開始します。
   - `scheduled_task() -> None`: 1 分ごとに実行されるスケジュールされたタスク。
   - `send_meeting_minutes(config: ChannelConfig) -> None`: 指定されたチャンネルに議事録を送信します。
   - `check_reactions(config: ChannelConfig) -> None`: リアクションを確認し、リアクションしていないメンバーに通知します。
-  - `on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None`: リアクションが追加されたときに呼び出されるメソッド。＊現在は、メッセージが流れてチャンネルが見づらいと指摘があったためコメントアウトしています（別のチャンネルを用意するなどで対応する案を考えています）
+  - `on_reaction_add(reaction: discord.Reaction, user: discord.User) -> None`: リアクションが追加されたときに呼び出されるメソッド。＊現在は、メッセージが流れてチャンネルが見づらいと指摘があったためコメントアウトしています（別のチャンネルを用意するなどで対応する案を考えています）。
   - `on_ready() -> None`: ボットが準備完了したときに呼び出されるメソッド。
 
 ## 設定と起動
