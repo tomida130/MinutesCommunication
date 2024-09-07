@@ -14,6 +14,7 @@
 - Python 3.8 以上
 - discord.py ライブラリ（`pip install discord.py`）
 - `.env`ファイルに`DISCORD_TOKEN`と`GUILD_ID`を設定
+- `DISCORD_TOKEN`に関してはNAS上にあるので確認
 
 ## 主要なクラスと関数
 
