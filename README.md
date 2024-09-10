@@ -6,7 +6,7 @@
 
 ## ファイル構成
 
-- `main.py`: ボットのメインファイル。全体のロジックを含んでいます。
+- `MinutesCommunication.py`: ボットのメインファイル。全体のロジックを含んでいます。
 - `reaction_messages.csv`: リアクション用のメッセージが保存された CSV ファイル。
 
 ## 必要な環境
@@ -14,6 +14,7 @@
 - Python 3.8 以上
 - discord.py ライブラリ（`pip install discord.py`）
 - `.env`ファイルに`DISCORD_TOKEN`と`GUILD_ID`を設定
+- `DISCORD_TOKEN`に関しては NAS 上にあるので確認
 
 ## 主要なクラスと関数
 
@@ -103,6 +104,7 @@ channel_configs: Final[list[ChannelConfig]] = [
 - リアクションメッセージは`reaction_messages.csv`から読み込まれるため、事前にメッセージを CSV に記載してください。
 - ID は、Discode 上で左クリックを押すことでコピーできます。
 - 更新する時間は最大 23:59 までなので 24:00 は入力できません。
+- 議事録の URL は、URL の末尾のみで動きます。
 
 ## 拡張
 
