@@ -31,6 +31,32 @@ class TestChannelConfig(unittest.TestCase):
         self.assertEqual(config.meeting_type, "修士ゼミ")
         self.assertEqual(config.meeting_url, "meetings/001")
 
+    def test_invalid_weekday(self):
+        # weekdayが範囲外のときにエラーが発生するか確認
+        with self.assertRaises(ValueError) as context:
+            ChannelConfig(
+                channel_id=123456789,
+                role_id=987654321,
+                weekday=7,  # 範囲外
+                time="12:30",
+                meeting_type="修士ゼミ",
+                meeting_url="meetings/001"
+            )
+        self.assertEqual(str(context.exception), "曜日は0から6までの値で指定してください")
+
+        # weekdayが負の値の場合もエラーが発生するか確認
+        with self.assertRaises(ValueError) as context:
+            ChannelConfig(
+                channel_id=123456789,
+                role_id=987654321,
+                weekday=-1,  # 範囲外
+                time="12:30",
+                meeting_type="修士ゼミ",
+                meeting_url="meetings/001"
+            )
+        self.assertEqual(str(context.exception), "曜日は0から6までの値で指定してください")
+
+
 
 
 if __name__ == '__main__':

@@ -1,7 +1,8 @@
 test_channel_config_initialization (__main__.TestChannelConfig.test_channel_config_initialization) ... ok
+test_invalid_weekday (__main__.TestChannelConfig.test_invalid_weekday) ... ok
 test_validate_time_format (__main__.TestChannelConfig.test_validate_time_format) ... ok
 
 ----------------------------------------------------------------------
-Ran 2 tests in 0.001s
+Ran 3 tests in 0.002s
 
 OK
