@@ -106,6 +106,7 @@ channel_configs: Final[list[ChannelConfig]] = [
 - リアクションメッセージは`reaction_messages.csv`から読み込まれるため、事前にメッセージを CSV に記載してください。
 - IDは、Discode上で左クリックを押すことでコピーできます。
 - 更新する時間は最大23:59までなので24:00は入力できません。
+- 議事録のURLは、URLの末尾のみで動きます。
 
 ## 拡張
 
