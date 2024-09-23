@@ -107,6 +107,6 @@ channel_configs: Final[list[ChannelConfig]] = [
 - 議事録の URL は、URL の末尾のみで動きます。
 
 ## 拡張
-
+ 
 - **チャンネル設定の追加**: 新しいチャンネル設定を追加するには、`channel_configs`リストに新しい設定を追加してください。
 - **メッセージのカスタマイズ**: `generate_message`メソッドをカスタマイズすることで、送信メッセージの内容を変更できます。
